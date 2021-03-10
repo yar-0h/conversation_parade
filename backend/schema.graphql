@@ -1,0 +1,125 @@
+scalar GraphQLDate
+
+
+type User {
+  _id: ID
+  name: String
+  checkIn: Int
+}
+
+type SiteData {
+  online: Int
+  Users: [User]
+  UserMemory: [User]
+}
+
+type Conversation {
+  _id: ID!
+  id: String!
+  date: GraphQLDate
+  videoUrl: String
+  vetoVote: Int
+  isFull: Boolean
+  hasEnded: Boolean
+  messages: [Message]
+  kouhai: String
+  kCheckIn: GraphQLDate
+  senpai: String
+  sCheckIn: GraphQLDate
+  adminRoom: Boolean
+}
+
+type Video {
+  # topicId: Int
+  url: String!
+}
+
+
+type Message {
+  _id: ID!
+  author: String!
+  time: GraphQLDate!
+  contents: String!
+}
+
+input UserInputs {
+  name: String!
+  anonymous: Boolean = True
+  email: String
+}
+
+input MessageInputs {
+  convoId: String!
+  message: String!
+  user: String!
+}
+
+input NoticeMeInputs {
+  convoId: String!
+  user: String!
+}
+
+input NoticeYouInputs {
+  convoId: String!
+  user: String!
+  memory: GraphQLDate!
+}
+
+#"Toned down Issue, used as inputs, without server generated values."
+#input IssueInputs {
+#  title: String!
+#  "Optional, if not supplied, will be set to 'New'"
+#  status: StatusType = New
+#  owner: String
+#  effort: Int
+#  due: GraphQLDate
+#  description: String
+#}
+#
+#"""Inputs for issueUpdate: all are optional. Whichever is specified will
+#be set to the given value, undefined fields will remain unmodified."""
+#input IssueUpdateInputs {
+#  title: String
+#  status: StatusType
+#  owner: String
+#  effort: Int
+#  due: GraphQLDate
+#  description: String
+#}
+
+##### Top level declarations
+
+type Query {
+  about: String!
+  user: User!
+  conversation(id: String): Conversation
+  userCount: Int!
+},
+
+#const query = `query issueList($status: StatusType) {
+#issueList (status: $status) {
+#id title status owner
+#created effort due
+#}
+#}`;
+
+type Mutation {
+  setAboutMessage(message: String!): String
+
+  createUser(User: UserInputs!): User!
+  createAnonymous: User!
+  deleteUser(id: ID!): Boolean!
+
+  seekConvo(user: String!): Conversation!
+  endConvo(id: String!): Boolean
+  deleteConvo(id: String!): Boolean!
+
+  vetoVideo(id: String!): Boolean!
+
+  noticeMe(notice: NoticeMeInputs!): Boolean
+  noticeYou(notice: NoticeYouInputs!): GraphQLDate
+
+  createMessage(messageDetails: MessageInputs): Boolean!
+  checkIn(user: String!): Boolean!
+  checkOut: Boolean!
+}
